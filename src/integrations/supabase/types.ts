@@ -552,6 +552,72 @@ export type Database = {
           },
         ]
       }
+      pontuacao_diaria: {
+        Row: {
+          categoria_dia: string | null
+          created_at: string
+          data: string
+          id: string
+          pontos_agua: number | null
+          pontos_atividade_fisica: number | null
+          pontos_avaliacao_dia: number | null
+          pontos_conexao_interna: number | null
+          pontos_energia_acordar: number | null
+          pontos_estresse: number | null
+          pontos_fome_emocional: number | null
+          pontos_gratidao: number | null
+          pontos_intencao_amanha: number | null
+          pontos_liquido_manha: number | null
+          pontos_pequena_vitoria: number | null
+          pontos_sono: number | null
+          total_pontos_dia: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          categoria_dia?: string | null
+          created_at?: string
+          data: string
+          id?: string
+          pontos_agua?: number | null
+          pontos_atividade_fisica?: number | null
+          pontos_avaliacao_dia?: number | null
+          pontos_conexao_interna?: number | null
+          pontos_energia_acordar?: number | null
+          pontos_estresse?: number | null
+          pontos_fome_emocional?: number | null
+          pontos_gratidao?: number | null
+          pontos_intencao_amanha?: number | null
+          pontos_liquido_manha?: number | null
+          pontos_pequena_vitoria?: number | null
+          pontos_sono?: number | null
+          total_pontos_dia?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          categoria_dia?: string | null
+          created_at?: string
+          data?: string
+          id?: string
+          pontos_agua?: number | null
+          pontos_atividade_fisica?: number | null
+          pontos_avaliacao_dia?: number | null
+          pontos_conexao_interna?: number | null
+          pontos_energia_acordar?: number | null
+          pontos_estresse?: number | null
+          pontos_fome_emocional?: number | null
+          pontos_gratidao?: number | null
+          pontos_intencao_amanha?: number | null
+          pontos_liquido_manha?: number | null
+          pontos_pequena_vitoria?: number | null
+          pontos_sono?: number | null
+          total_pontos_dia?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           altura_cm: number | null
