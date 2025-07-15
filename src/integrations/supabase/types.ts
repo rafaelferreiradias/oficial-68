@@ -718,6 +718,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_physical_data_complete: {
+        Args: { user_uuid: string }
+        Returns: boolean
+      }
       is_admin: {
         Args: { user_id: string }
         Returns: boolean
