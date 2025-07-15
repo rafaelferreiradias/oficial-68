@@ -96,24 +96,18 @@ export const WheelTool: React.FC<WheelToolProps> = ({
   }, [sessionId, wheelType]);
 
   const loadExistingResponse = async () => {
+    // Since we don't have wheel_responses table, use localStorage
+    const storageKey = `wheel_${wheelType}_${sessionId}_${userId}`;
     try {
-      const { data, error } = await supabase
-        .from('wheel_responses')
-        .select('*')
-        .eq('session_id', sessionId)
-        .eq('wheel_type', wheelType)
-        .eq('user_id', userId)
-        .maybeSingle();
-
-      if (error) throw error;
-
-      if (data) {
-        setScores(data.responses as Record<string, number> || {});
-        setReflectionAnswers(data.reflection_answers as Record<string, string> || {});
+      const stored = localStorage.getItem(storageKey);
+      if (stored) {
+        const data = JSON.parse(stored);
+        setScores(data.scores || {});
+        setReflectionAnswers(data.reflectionAnswers || {});
         setHasExistingResponse(true);
       }
     } catch (error) {
-      console.error('Erro ao carregar resposta existente:', error);
+      console.error('Erro ao carregar resposta do localStorage:', error);
     }
   };
 
@@ -174,20 +168,14 @@ export const WheelTool: React.FC<WheelToolProps> = ({
   const handleSave = async () => {
     setIsLoading(true);
     try {
-      const { error } = await supabase
-        .from('wheel_responses')
-        .upsert({
-          user_id: userId,
-          session_id: sessionId,
-          wheel_type: wheelType,
-          responses: scores,
-          reflection_answers: reflectionAnswers,
-          completed_at: new Date().toISOString()
-        }, {
-          onConflict: 'user_id,session_id,wheel_type'
-        });
-
-      if (error) throw error;
+      // Since we don't have wheel_responses table, save to localStorage
+      const storageKey = `wheel_${wheelType}_${sessionId}_${userId}`;
+      const data = {
+        scores,
+        reflectionAnswers,
+        completed_at: new Date().toISOString()
+      };
+      localStorage.setItem(storageKey, JSON.stringify(data));
 
       toast({
         title: "Sucesso!",

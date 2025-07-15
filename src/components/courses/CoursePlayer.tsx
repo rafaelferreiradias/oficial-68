@@ -10,9 +10,9 @@ interface Course {
   id: string;
   title: string;
   description: string;
-  image_url: string;
+  thumbnail: string;
   category: string;
-  price: number;
+  is_premium: boolean;
 }
 
 interface CourseLesson {
@@ -41,57 +41,19 @@ export const CoursePlayer: React.FC<CoursePlayerProps> = ({ lesson, course, onBa
   }, [user, lesson]);
 
   const checkLessonProgress = async () => {
-    if (!user) return;
-
-    try {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('user_id', user.id)
-        .single();
-
-      if (!profile) return;
-
-      const { data } = await supabase
-        .from('user_course_progress')
-        .select('*')
-        .eq('user_id', profile.id)
-        .eq('lesson_id', lesson.id)
-        .single();
-
-      setIsCompleted(data?.completed || false);
-    } catch (error) {
-      console.error('Erro ao verificar progresso:', error);
-    }
+    // Since we don't have user_course_progress table, use localStorage
+    const storageKey = `lesson_${lesson.id}_completed_${user?.id}`;
+    const completed = localStorage.getItem(storageKey) === 'true';
+    setIsCompleted(completed);
   };
 
   const markAsCompleted = async () => {
-    if (!user || !course) return;
+    if (!user) return;
 
-    try {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('user_id', user.id)
-        .single();
-
-      if (!profile) return;
-
-      const { error } = await supabase
-        .from('user_course_progress')
-        .upsert({
-          user_id: profile.id,
-          course_id: course.id,
-          lesson_id: lesson.id,
-          completed: true,
-          completed_at: new Date().toISOString()
-        });
-
-      if (error) throw error;
-      setIsCompleted(true);
-    } catch (error) {
-      console.error('Erro ao marcar como concluído:', error);
-    }
+    // Since we don't have user_course_progress table, use localStorage
+    const storageKey = `lesson_${lesson.id}_completed_${user.id}`;
+    localStorage.setItem(storageKey, 'true');
+    setIsCompleted(true);
   };
 
   const getYouTubeEmbedUrl = (url: string) => {
@@ -198,9 +160,9 @@ export const CoursePlayer: React.FC<CoursePlayerProps> = ({ lesson, course, onBa
               <CardContent className="p-4">
                 <h3 className="font-semibold text-netflix-text mb-3">Sobre o Curso</h3>
                 <div className="aspect-video bg-gradient-to-br from-instituto-orange/20 to-purple-500/20 rounded-lg mb-3 overflow-hidden">
-                  {course.image_url && (
+                  {course.thumbnail && (
                     <img 
-                      src={course.image_url} 
+                      src={course.thumbnail} 
                       alt={course.title}
                       className="w-full h-full object-cover"
                     />

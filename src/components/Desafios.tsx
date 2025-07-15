@@ -165,7 +165,7 @@ export default function Desafios() {
                     
                     <Button 
                       className="w-full" 
-                      onClick={() => joinChallenge(challenge.id, challenge.duration_days)}
+                      onClick={() => joinChallenge(challenge.id)}
                       disabled={loading}
                     >
                       {loading ? 'Participando...' : 'Participar do Desafio'}
