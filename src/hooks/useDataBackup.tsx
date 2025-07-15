@@ -88,15 +88,9 @@ export const useDataBackup = () => {
         .select('*')
         .eq('user_id', user.id);
 
-      const { data: goals } = await supabase
-        .from('goals')
-        .select('*')
-        .eq('user_id', user.id);
-
-      const { data: diaryEntries } = await supabase
-        .from('diary_entries')
-        .select('*')
-        .eq('user_id', user.id);
+      // Get data from localStorage since tables don't exist
+      const goals = JSON.parse(localStorage.getItem(`goals_${user.id}`) || '[]');
+      const diaryEntries = JSON.parse(localStorage.getItem(`diary_${user.id}`) || '[]');
 
       backupData.profile = profile;
       backupData.healthData = healthData;

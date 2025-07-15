@@ -273,11 +273,20 @@ export const useUserPoints = () => {
       const profile = await supabase.from('profiles').select('id').eq('user_id', user.id).single();
       if (profile.error) throw profile.error;
 
-      await supabase.rpc('update_user_points', {
-        p_user_id: profile.data.id,
-        p_points: points,
-        p_activity_type: activityType
-      });
+      // Update points directly in the table instead of using RPC
+      const { data: currentPoints } = await supabase
+        .from('user_points')
+        .select('*')
+        .eq('user_id', profile.data.id)
+        .single();
+
+      await supabase
+        .from('user_points')
+        .update({
+          total_points: (currentPoints?.total_points || 0) + points,
+          daily_points: (currentPoints?.daily_points || 0) + points
+        })
+        .eq('user_id', profile.data.id);
 
       // Atualizar dados locais e ranking
       await fetchUserPoints();

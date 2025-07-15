@@ -35,7 +35,6 @@ export const useMissaoUsuario = () => {
 
   return {
     missions,
-    missoesDaSemana: missions,
     loading,
     refetch: fetchMissions
   };

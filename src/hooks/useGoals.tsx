@@ -33,14 +33,13 @@ export const useGoals = () => {
         return;
       }
 
-      const { data, error } = await supabase
-        .from('goals')
-        .select('*')
-        .eq('user_id', (await supabase.from('profiles').select('id').eq('user_id', user.id).single()).data?.id)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setGoals(data as Goal[] || []);
+      // Since goals table doesn't exist, use localStorage
+      const localGoals = localStorage.getItem(`goals_${user.id}`);
+      if (localGoals) {
+        setGoals(JSON.parse(localGoals));
+      } else {
+        setGoals([]);
+      }
     } catch (error) {
       console.error('Erro ao buscar metas:', error);
       toast.error('Erro ao carregar metas');
@@ -53,23 +52,20 @@ export const useGoals = () => {
     try {
       if (!user) throw new Error('Usuário não autenticado');
 
-      const profile = await supabase.from('profiles').select('id').eq('user_id', user.id).single();
-      if (profile.error) throw profile.error;
-
-      const { data, error } = await supabase
-        .from('goals')
-        .insert([{
-          ...goalData,
-          user_id: profile.data.id
-        }])
-        .select()
-        .single();
-
-      if (error) throw error;
+      const newGoal: Goal = {
+        ...goalData,
+        id: Date.now().toString(),
+        user_id: user.id,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
       
-      setGoals(prev => [data as Goal, ...prev]);
+      const updatedGoals = [newGoal, ...goals];
+      setGoals(updatedGoals);
+      localStorage.setItem(`goals_${user.id}`, JSON.stringify(updatedGoals));
+      
       toast.success('Meta criada com sucesso!');
-      return data;
+      return newGoal;
     } catch (error) {
       console.error('Erro ao criar meta:', error);
       toast.error('Erro ao criar meta');
@@ -79,18 +75,19 @@ export const useGoals = () => {
 
   const updateGoal = async (id: string, updates: Partial<Goal>) => {
     try {
-      const { data, error } = await supabase
-        .from('goals')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      setGoals(prev => prev.map(goal => goal.id === id ? data as Goal : goal));
+      const updatedGoals = goals.map(goal => 
+        goal.id === id 
+          ? { ...goal, ...updates, updated_at: new Date().toISOString() }
+          : goal
+      );
+      
+      setGoals(updatedGoals);
+      if (user) {
+        localStorage.setItem(`goals_${user.id}`, JSON.stringify(updatedGoals));
+      }
+      
       toast.success('Meta atualizada com sucesso!');
-      return data;
+      return updatedGoals.find(g => g.id === id);
     } catch (error) {
       console.error('Erro ao atualizar meta:', error);
       toast.error('Erro ao atualizar meta');
@@ -100,14 +97,13 @@ export const useGoals = () => {
 
   const deleteGoal = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('goals')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-
-      setGoals(prev => prev.filter(goal => goal.id !== id));
+      const updatedGoals = goals.filter(goal => goal.id !== id);
+      setGoals(updatedGoals);
+      
+      if (user) {
+        localStorage.setItem(`goals_${user.id}`, JSON.stringify(updatedGoals));
+      }
+      
       toast.success('Meta excluída com sucesso!');
     } catch (error) {
       console.error('Erro ao excluir meta:', error);

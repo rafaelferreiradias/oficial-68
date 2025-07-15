@@ -156,12 +156,22 @@ export const useDailyMissions = (onPointsUpdate?: () => void) => {
 
       if (error) throw error;
 
-      // Atualizar pontos do usuário
-      await supabase.rpc('update_user_points', {
-        p_user_id: profile.data.id,
-        p_points: mission.points,
-        p_activity_type: 'daily_mission'
-      });
+      // Update user points in user_points table instead
+      const { data: userPoints } = await supabase
+        .from('user_points')
+        .select('*')
+        .eq('user_id', profile.data.id)
+        .single();
+
+      if (userPoints) {
+        await supabase
+          .from('user_points')
+          .update({
+            total_points: (userPoints.total_points || 0) + (mission.points || 0),
+            daily_points: (userPoints.daily_points || 0) + (mission.points || 0)
+          })
+          .eq('user_id', profile.data.id);
+      }
 
       setMissions(prev => prev.map(m => 
         m.id === missionId ? { ...m, completed: true } : m

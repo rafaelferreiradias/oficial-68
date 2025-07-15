@@ -26,10 +26,11 @@ export const CourseManagement = () => {
   const [courseForm, setCourseForm] = useState({
     title: '',
     description: '',
-    image_url: '',
+    thumbnail: '',
     category: 'general',
-    price: 0,
-    is_active: true
+    video_url: '',
+    duration_minutes: 0,
+    is_premium: false
   });
 
   const [moduleForm, setModuleForm] = useState({
@@ -55,10 +56,11 @@ export const CourseManagement = () => {
       setCourseForm({
         title: '',
         description: '',
-        image_url: '',
+        thumbnail: '',
         category: 'general',
-        price: 0,
-        is_active: true
+        video_url: '',
+        duration_minutes: 0,
+        is_premium: false
       });
       toast({
         title: "Sucesso",
@@ -400,8 +402,8 @@ export const CourseManagement = () => {
                 <Label htmlFor="course-image">URL da Imagem</Label>
                 <Input
                   id="course-image"
-                  value={courseForm.image_url}
-                  onChange={(e) => setCourseForm(prev => ({ ...prev, image_url: e.target.value }))}
+                  value={courseForm.thumbnail}
+                  onChange={(e) => setCourseForm(prev => ({ ...prev, thumbnail: e.target.value }))}
                   className="bg-netflix-hover border-netflix-border"
                 />
               </div>
@@ -419,17 +421,16 @@ export const CourseManagement = () => {
                   </SelectContent>
                 </Select>
               </div>
-              <div>
-                <Label htmlFor="course-price">Preço</Label>
-                <Input
-                  id="course-price"
-                  type="number"
-                  step="0.01"
-                  value={courseForm.price}
-                  onChange={(e) => setCourseForm(prev => ({ ...prev, price: parseFloat(e.target.value) }))}
-                  className="bg-netflix-hover border-netflix-border"
-                />
-              </div>
+                <div>
+                  <Label htmlFor="course-duration">Duração (minutos)</Label>
+                  <Input
+                    id="course-duration"
+                    type="number"
+                    value={courseForm.duration_minutes}
+                    onChange={(e) => setCourseForm(prev => ({ ...prev, duration_minutes: parseInt(e.target.value) }))}
+                    className="bg-netflix-hover border-netflix-border"
+                  />
+                </div>
               <Button onClick={handleCreateCourse} className="w-full">
                 Criar Curso
               </Button>
@@ -443,9 +444,9 @@ export const CourseManagement = () => {
           <Card key={course.id} className="bg-netflix-card border-netflix-border group hover:scale-105 transition-transform">
             <CardContent className="p-0">
               <div className="aspect-video bg-gradient-to-br from-instituto-orange/20 to-purple-500/20 rounded-t-lg overflow-hidden">
-                {course.image_url && (
+                {course.thumbnail && (
                   <img 
-                    src={course.image_url} 
+                    src={course.thumbnail} 
                     alt={course.title}
                     className="w-full h-full object-cover"
                   />
@@ -464,10 +465,10 @@ export const CourseManagement = () => {
                   {course.description}
                 </p>
                 
-                <div className="flex items-center justify-between">
-                  <span className="font-medium text-instituto-orange">
-                    R$ {course.price.toFixed(2)}
-                  </span>
+                 <div className="flex items-center justify-between">
+                   <span className="font-medium text-instituto-orange">
+                     {course.duration_minutes ? `${course.duration_minutes} min` : 'Sem duração'}
+                   </span>
                   
                   <div className="flex gap-2">
                     <Button 

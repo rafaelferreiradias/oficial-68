@@ -95,9 +95,7 @@ export const useMissaoDia = (isVisitor = false) => {
 
       if (data) {
         setMissao({
-          ...data,
-          prioridades: Array.isArray(data.prioridades) ? 
-            data.prioridades.map(p => String(p)) : []
+          ...data
         });
       } else {
         // Criar nova missão para hoje
