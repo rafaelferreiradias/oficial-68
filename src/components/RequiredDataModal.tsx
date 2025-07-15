@@ -41,13 +41,25 @@ export const RequiredDataModal = () => {
       // Verificar se dados obrigatórios estão faltando
       const missingData = !data?.data_nascimento || !data?.sexo || !data?.altura_cm;
       
+      console.log('Verificação de dados obrigatórios:', {
+        user_id: user.id,
+        data_nascimento: data?.data_nascimento,
+        sexo: data?.sexo,
+        altura_cm: data?.altura_cm,
+        missingData
+      });
+      
       if (missingData) {
+        console.log('Dados obrigatórios faltando - exibindo modal');
         setFormData({
           data_nascimento: data?.data_nascimento || '',
           sexo: data?.sexo || '',
           altura_cm: data?.altura_cm?.toString() || ''
         });
         setOpen(true);
+      } else {
+        console.log('Todos os dados obrigatórios estão preenchidos - pulando modal');
+        setOpen(false);
       }
     } catch (error) {
       console.error('Erro ao verificar dados obrigatórios:', error);

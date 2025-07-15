@@ -62,10 +62,10 @@ export const useProgressData = () => {
         .eq('user_id', profile.id)
         .order('data_medicao', { ascending: true });
 
-      // Buscar metas de peso
+      // Buscar metas de peso dos dados físicos
       const { data: metasPeso } = await supabase
-        .from('weight_goals')
-        .select('*')
+        .from('dados_fisicos_usuario')
+        .select('meta_peso_kg, created_at')
         .eq('user_id', profile.id)
         .order('created_at', { ascending: false });
 

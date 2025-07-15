@@ -218,8 +218,8 @@ export const BeneficiosVisuais: React.FC = () => {
   const dadosHumor = React.useMemo(() => {
     return missoesDaSemana.map((missao, index) => ({
       dia: `Dia ${index + 1}`,
-      humor: missao.humor === '😄' ? 3 : missao.humor === '😐' ? 2 : 1,
-      humorTexto: formatarHumor(missao.humor)
+      humor: String(missao.humor) === '😄' ? 3 : String(missao.humor) === '😐' ? 2 : 1,
+      humorTexto: formatarHumor(String(missao.humor))
     }));
   }, [missoesDaSemana]);
 
@@ -554,7 +554,7 @@ export const BeneficiosVisuais: React.FC = () => {
                 <div className="text-center p-4 bg-orange-50 rounded-lg">
                   <Heart className="h-8 w-8 text-orange-500 mx-auto mb-2" />
                   <div className="text-2xl font-bold text-orange-600">
-                    {Math.round(missoesDaSemana.filter(m => m.humor === '😄').length / missoesDaSemana.length * 100)}%
+                    {Math.round(missoesDaSemana.filter(m => String(m.humor) === '😄').length / missoesDaSemana.length * 100)}%
                   </div>
                   <div className="text-sm text-muted-foreground">Dias felizes</div>
                 </div>
