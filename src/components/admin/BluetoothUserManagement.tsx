@@ -61,11 +61,11 @@ export const BluetoothUserManagement: React.FC = () => {
           // Buscar última pesagem
           const { data: latestWeight } = await supabase
             .from('pesagens')
-            .select('peso_kg, data_medicao, gordura_corporal_pct, imc, origem_medicao')
+            .select('peso_kg, data_medicao, gordura_corporal_pct, origem_medicao')
             .eq('user_id', profile.id)
             .order('data_medicao', { ascending: false })
             .limit(1)
-            .single();
+            .maybeSingle();
 
           // Contar total de medições
           const { count: totalMeasurements } = await supabase
@@ -92,12 +92,13 @@ export const BluetoothUserManagement: React.FC = () => {
             else weight_trend = 'stable';
           }
 
-          // Determinar nível de risco baseado no IMC
+          // Determinar nível de risco baseado no peso (já que IMC não está disponível na tabela pesagens)
           let risk_level: 'low' | 'moderate' | 'high' = 'low';
-          if (latestWeight?.imc) {
-            if (latestWeight.imc < 18.5 || latestWeight.imc >= 30) {
+          if (latestWeight?.peso_kg) {
+            // Usar peso como indicador simplificado (pode ser melhorado com dados físicos completos)
+            if (latestWeight.peso_kg < 50 || latestWeight.peso_kg > 120) {
               risk_level = 'high';
-            } else if (latestWeight.imc >= 25) {
+            } else if (latestWeight.peso_kg > 100) {
               risk_level = 'moderate';
             }
           }

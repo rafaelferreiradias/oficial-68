@@ -120,8 +120,8 @@ export const BeneficiosVisuais: React.FC = () => {
         const pesagensFormatadas = pesagensResult.data?.map(p => ({
           data: p.data_medicao,
           peso: p.peso_kg,
-          imc: p.imc || 0,
-          circunferencia: p.circunferencia_abdominal_cm,
+          imc: 0, // IMC não está disponível na tabela pesagens
+          circunferencia: 0, // Circunferência não está disponível na tabela pesagens
           gordura_corporal_pct: p.gordura_corporal_pct
         })) || [];
 

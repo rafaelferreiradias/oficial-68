@@ -55,22 +55,9 @@ export const ClientInterventionPanel: React.FC<ClientInterventionPanelProps> = (
 
   const loadNotes = async () => {
     try {
-      const { data } = await supabase
-        .from('comments')
-        .select('*')
-        .eq('target_id', userId)
-        .eq('target_type', 'user_intervention')
-        .order('created_at', { ascending: false });
-
-      if (data) {
-        setNotes(data.map(comment => ({
-          id: comment.id,
-          content: comment.content,
-          created_at: comment.created_at,
-          created_by: comment.user_id,
-          type: comment.is_private ? 'alert' : 'note'
-        })));
-      }
+      // Funcionalidade temporariamente desabilitada - tabela 'comments' não existe
+      console.log('Carregando notas do usuário:', userId);
+      setNotes([]); // Lista vazia por enquanto
     } catch (error) {
       console.error('Erro ao carregar notas:', error);
     }
@@ -93,17 +80,12 @@ export const ClientInterventionPanel: React.FC<ClientInterventionPanelProps> = (
 
       if (!adminProfile) throw new Error('Perfil do admin não encontrado');
 
-      const { error } = await supabase
-        .from('comments')
-        .insert({
-          target_id: userId,
-          target_type: 'user_intervention',
-          content: newNote,
-          user_id: adminProfile.id,
-          is_private: noteType === 'alert'
-        });
-
-      if (error) throw error;
+      // Funcionalidade temporariamente desabilitada - tabela 'comments' não existe
+      console.log('Sistema de comentários em desenvolvimento');
+      toast({
+        title: "Funcionalidade em desenvolvimento",
+        description: "Sistema de notas será implementado em breve."
+      });
 
       setNewNote('');
       loadNotes();

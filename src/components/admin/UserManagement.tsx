@@ -135,7 +135,7 @@ export const UserManagement: React.FC = () => {
         .update({
           email: editForm.email,
           full_name: editForm.full_name,
-          role: editForm.role
+          role: editForm.role as 'admin' | 'client'
         })
         .eq('id', editingUser.id);
 
@@ -177,7 +177,7 @@ export const UserManagement: React.FC = () => {
       if (authData.user && createForm.role !== 'client') {
         const { error: updateError } = await supabase
           .from('profiles')
-          .update({ role: createForm.role })
+          .update({ role: createForm.role as 'admin' | 'client' })
           .eq('user_id', authData.user.id);
 
         if (updateError) throw updateError;
