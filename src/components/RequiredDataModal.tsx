@@ -102,19 +102,26 @@ export const RequiredDataModal = () => {
       if (profileError) throw profileError;
 
       // Criar dados completos do cliente na nova tabela
-      const clientSuccess = await createClientData({
-        nome_completo: profile.full_name || '',
-        data_nascimento: formData.data_nascimento,
-        sexo: formData.sexo,
-        altura_cm: parseInt(formData.altura_cm),
-        telefone: formData.telefone,
-        funcao_do_usuario: formData.funcao_do_usuario,
-        status: 'ativo',
-        plano: 'básico'
-      });
+      const { error: clientError } = await supabase
+        .from('clientes')
+        .upsert({
+          user_id: user.id,
+          email: user.email || '',
+          nome_completo: profile.full_name || '',
+          data_nascimento: formData.data_nascimento,
+          sexo: formData.sexo,
+          altura_cm: parseInt(formData.altura_cm),
+          telefone: formData.telefone,
+          funcao_do_usuario: formData.funcao_do_usuario,
+          status: 'ativo',
+          plano: 'básico',
+          data_cadastro: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        });
 
-      if (!clientSuccess) {
-        throw new Error('Falha ao criar dados do cliente');
+      if (clientError) {
+        console.error('Erro ao criar dados do cliente:', clientError);
+        throw clientError;
       }
 
       // Criar dados físicos iniciais
