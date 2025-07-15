@@ -86,6 +86,69 @@ export type Database = {
         }
         Relationships: []
       }
+      clientes: {
+        Row: {
+          altura_cm: number | null
+          circunferencia_abdominal_cm: number | null
+          created_at: string | null
+          data_cadastro: string | null
+          data_nascimento: string | null
+          email: string | null
+          funcao_do_usuario: string | null
+          id: string
+          meta_peso_kg: number | null
+          nome_completo: string | null
+          peso_inicial_kg: number | null
+          plano: string | null
+          sexo: string | null
+          status: string | null
+          telefone: string | null
+          ultima_atividade: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          altura_cm?: number | null
+          circunferencia_abdominal_cm?: number | null
+          created_at?: string | null
+          data_cadastro?: string | null
+          data_nascimento?: string | null
+          email?: string | null
+          funcao_do_usuario?: string | null
+          id?: string
+          meta_peso_kg?: number | null
+          nome_completo?: string | null
+          peso_inicial_kg?: number | null
+          plano?: string | null
+          sexo?: string | null
+          status?: string | null
+          telefone?: string | null
+          ultima_atividade?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          altura_cm?: number | null
+          circunferencia_abdominal_cm?: number | null
+          created_at?: string | null
+          data_cadastro?: string | null
+          data_nascimento?: string | null
+          email?: string | null
+          funcao_do_usuario?: string | null
+          id?: string
+          meta_peso_kg?: number | null
+          nome_completo?: string | null
+          peso_inicial_kg?: number | null
+          plano?: string | null
+          sexo?: string | null
+          status?: string | null
+          telefone?: string | null
+          ultima_atividade?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       courses: {
         Row: {
           category: string | null

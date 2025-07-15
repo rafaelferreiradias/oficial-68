@@ -7,11 +7,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useClientData } from '@/hooks/useClientData';
 import { AlertTriangle, User, Calendar, Users, Ruler, Loader } from 'lucide-react';
 
 export const RequiredDataModal = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { createClientData } = useClientData();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState<any>(null);
@@ -19,7 +21,9 @@ export const RequiredDataModal = () => {
   const [formData, setFormData] = useState({
     data_nascimento: '',
     sexo: '',
-    altura_cm: ''
+    altura_cm: '',
+    telefone: '',
+    funcao_do_usuario: ''
   });
 
   useEffect(() => {
@@ -54,7 +58,9 @@ export const RequiredDataModal = () => {
         setFormData({
           data_nascimento: data?.data_nascimento || '',
           sexo: data?.sexo || '',
-          altura_cm: data?.altura_cm?.toString() || ''
+          altura_cm: data?.altura_cm?.toString() || '',
+          telefone: '',
+          funcao_do_usuario: ''
         });
         setOpen(true);
       } else {
@@ -94,6 +100,22 @@ export const RequiredDataModal = () => {
         .eq('user_id', user.id);
 
       if (profileError) throw profileError;
+
+      // Criar dados completos do cliente na nova tabela
+      const clientSuccess = await createClientData({
+        nome_completo: profile.full_name || '',
+        data_nascimento: formData.data_nascimento,
+        sexo: formData.sexo,
+        altura_cm: parseInt(formData.altura_cm),
+        telefone: formData.telefone,
+        funcao_do_usuario: formData.funcao_do_usuario,
+        status: 'ativo',
+        plano: 'básico'
+      });
+
+      if (!clientSuccess) {
+        throw new Error('Falha ao criar dados do cliente');
+      }
 
       // Criar dados físicos iniciais
       const { error: dadosFisicosError } = await supabase
@@ -221,6 +243,38 @@ export const RequiredDataModal = () => {
               <p className="text-xs text-muted-foreground">
                 Fundamental para todos os cálculos de índices de saúde
               </p>
+            </div>
+
+            {/* Telefone */}
+            <div className="space-y-2">
+              <Label htmlFor="telefone" className="flex items-center gap-2">
+                <User className="h-4 w-4 text-instituto-orange" />
+                Telefone
+              </Label>
+              <Input
+                id="telefone"
+                type="tel"
+                value={formData.telefone}
+                onChange={(e) => handleChange('telefone', e.target.value)}
+                placeholder="Ex: (11) 99999-9999"
+                className="border-instituto-orange/30 focus:border-instituto-orange"
+              />
+            </div>
+
+            {/* Função do Usuário */}
+            <div className="space-y-2">
+              <Label htmlFor="funcao_do_usuario" className="flex items-center gap-2">
+                <User className="h-4 w-4 text-instituto-orange" />
+                Profissão/Função
+              </Label>
+              <Input
+                id="funcao_do_usuario"
+                type="text"
+                value={formData.funcao_do_usuario}
+                onChange={(e) => handleChange('funcao_do_usuario', e.target.value)}
+                placeholder="Ex: Estudante, Profissional Liberal, etc."
+                className="border-instituto-orange/30 focus:border-instituto-orange"
+              />
             </div>
 
             <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
