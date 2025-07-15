@@ -34,10 +34,19 @@ export const usePontuacaoDiaria = () => {
     queryFn: async () => {
       if (!user?.id) return null;
       
+      // Buscar o profile_id do usuário autenticado
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (!profile) return null;
+      
       const { data, error } = await supabase
         .from('pontuacao_diaria')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', profile.id)
         .eq('data', format(new Date(), 'yyyy-MM-dd'))
         .maybeSingle();
 
@@ -56,12 +65,21 @@ export const usePontuacaoDiaria = () => {
     queryFn: async () => {
       if (!user?.id) return [];
       
+      // Buscar o profile_id do usuário autenticado
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (!profile) return [];
+      
       const dataInicio = format(subDays(new Date(), 30), 'yyyy-MM-dd');
       
       const { data, error } = await supabase
         .from('pontuacao_diaria')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', profile.id)
         .gte('data', dataInicio)
         .order('data', { ascending: true });
 
@@ -80,29 +98,45 @@ export const usePontuacaoDiaria = () => {
     queryFn: async () => {
       const dataInicio = format(subDays(new Date(), 7), 'yyyy-MM-dd');
       
-      const { data, error } = await supabase
+      // Buscar dados de pontuação
+      const { data: pontuacaoData, error: pontuacaoError } = await supabase
         .from('pontuacao_diaria')
-        .select(`
-          user_id,
-          total_pontos_dia,
-          data,
-          profiles!inner(full_name, email)
-        `)
+        .select('user_id, total_pontos_dia, data')
         .gte('data', dataInicio)
         .order('total_pontos_dia', { ascending: false });
 
-      if (error) {
-        console.error('Erro ao buscar ranking semanal:', error);
+      if (pontuacaoError) {
+        console.error('Erro ao buscar pontuação:', pontuacaoError);
         return [];
       }
 
+      // Buscar dados dos profiles
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, full_name, email');
+
+      if (profilesError) {
+        console.error('Erro ao buscar profiles:', profilesError);
+        return [];
+      }
+
+      // Criar mapa de profiles
+      const profilesMap = profilesData.reduce((acc: any, profile: any) => {
+        acc[profile.id] = profile;
+        return acc;
+      }, {});
+
       // Agrupar por usuário e calcular média semanal
-      const rankingAgrupado = data.reduce((acc: any, item: any) => {
+      const rankingAgrupado = pontuacaoData.reduce((acc: any, item: any) => {
         const userId = item.user_id;
+        const profile = profilesMap[userId];
+        
+        if (!profile) return acc; // Pular se não encontrar profile
+        
         if (!acc[userId]) {
           acc[userId] = {
             user_id: userId,
-            nome: item.profiles.full_name || item.profiles.email,
+            nome: profile.full_name || profile.email || 'Usuário',
             pontos: [],
             total_pontos: 0,
             media_semanal: 0,
@@ -127,10 +161,19 @@ export const usePontuacaoDiaria = () => {
     mutationFn: async (pontuacao: Partial<PontuacaoDiaria>) => {
       if (!user?.id) throw new Error('Usuário não autenticado');
 
+      // Buscar o profile_id do usuário autenticado
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (!profile) throw new Error('Profile não encontrado');
+
       const { data, error } = await supabase
         .from('pontuacao_diaria')
         .insert({
-          user_id: user.id,
+          user_id: profile.id,
           data: format(new Date(), 'yyyy-MM-dd'),
           ...pontuacao,
         })
@@ -151,10 +194,19 @@ export const usePontuacaoDiaria = () => {
     mutationFn: async (pontuacao: Partial<PontuacaoDiaria>) => {
       if (!user?.id) throw new Error('Usuário não autenticado');
 
+      // Buscar o profile_id do usuário autenticado
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (!profile) throw new Error('Profile não encontrado');
+
       const { data, error } = await supabase
         .from('pontuacao_diaria')
         .update(pontuacao)
-        .eq('user_id', user.id)
+        .eq('user_id', profile.id)
         .eq('data', format(new Date(), 'yyyy-MM-dd'))
         .select()
         .single();

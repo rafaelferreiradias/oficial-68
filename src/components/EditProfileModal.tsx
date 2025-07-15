@@ -63,7 +63,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
           email: formData.email,
           celular: formData.celular,
           data_nascimento: formData.data_nascimento || null,
-          sexo: formData.sexo || null,
+          sexo: (formData.sexo as 'masculino' | 'feminino' | 'outro') || null,
           altura_cm: formData.altura_cm ? parseInt(formData.altura_cm) : null
         })
         .eq('user_id', user.id);

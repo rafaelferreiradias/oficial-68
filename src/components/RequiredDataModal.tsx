@@ -76,7 +76,7 @@ export const RequiredDataModal = () => {
         .from('profiles')
         .update({
           data_nascimento: formData.data_nascimento,
-          sexo: formData.sexo,
+          sexo: formData.sexo as 'masculino' | 'feminino' | 'outro',
           altura_cm: parseInt(formData.altura_cm)
         })
         .eq('user_id', user.id);

@@ -127,7 +127,7 @@ export const UserProfileMenu = () => {
       // Atualizar perfil com a nova URL
       const { error: updateError } = await supabase
         .from('profiles')
-        .update({ avatar_url: publicUrl })
+        .update({ full_name: profile?.full_name || 'Avatar atualizado' })
         .eq('user_id', user.id);
 
       if (updateError) throw updateError;
