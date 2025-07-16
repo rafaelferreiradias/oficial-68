@@ -79,7 +79,7 @@ export const BluetoothScaleConnection: React.FC<BluetoothScaleConnectionProps> =
     try {
       // 🔄 ETAPA 1: Buscar profile do usuário
       const { data: profile, error: profileError } = await supabase
-        .from('profiles')
+        .from('perfis')
         .select('id')
         .eq('user_id', user.id)
         .single();
@@ -88,14 +88,14 @@ export const BluetoothScaleConnection: React.FC<BluetoothScaleConnectionProps> =
 
       // Buscar dados do perfil para altura, idade e sexo
       const { data: dadosFisicos } = await supabase
-        .from('profiles')
+        .from('perfis')
         .select('altura_cm, data_nascimento, sexo')
         .eq('user_id', profile.id)
         .maybeSingle();
 
       // Buscar última pesagem para calcular progresso
       const { data: ultimaPesagem } = await supabase
-        .from('dados_fisicos')
+        .from('pesagens')
         .select('peso_kg, data_medicao')
         .eq('user_id', profile.id)
         .order('data_medicao', { ascending: false })
@@ -178,7 +178,7 @@ export const BluetoothScaleConnection: React.FC<BluetoothScaleConnectionProps> =
 
       // Inserir dados completos na tabela dados_fisicos
       const { error: pesagemError } = await supabase
-        .from('dados_fisicos')
+        .from('pesagens')
         .insert({
           user_id: profile.id,
           peso_kg: peso,
@@ -201,7 +201,7 @@ export const BluetoothScaleConnection: React.FC<BluetoothScaleConnectionProps> =
       
       try {
         const { error: saudeError } = await supabase
-          .from('dados_saude')
+          .from('dados_saude_usuario')
           .upsert({
             user_id: profile.id,
             peso_atual_kg: peso,

@@ -65,7 +65,7 @@ export const BeneficiosVisuais: React.FC = () => {
     
     try {
       const { data: profile } = await supabase
-        .from('profiles')
+        .from('perfis')
         .select('id')
         .eq('user_id', user.id)
         .single();
@@ -74,14 +74,14 @@ export const BeneficiosVisuais: React.FC = () => {
         // Buscar TODOS os dados em paralelo
         const [pesagensResult, fisicaResult, saudeResult] = await Promise.all([
           supabase
-            .from('dados_fisicos')
+            .from('pesagens')
             .select('*')
             .eq('user_id', profile.id)
             .order('data_medicao', { ascending: false })
             .limit(30),
           
           supabase
-            .from('dados_fisicos')
+            .from('pesagens')
             .select('*')
             .eq('user_id', profile.id)
             .order('created_at', { ascending: false })
@@ -89,7 +89,7 @@ export const BeneficiosVisuais: React.FC = () => {
             .maybeSingle(),
             
           supabase
-            .from('dados_saude')
+            .from('dados_saude_usuario')
             .select('*')
             .eq('user_id', profile.id)
             .order('data_atualizacao', { ascending: false })

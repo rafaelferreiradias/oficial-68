@@ -16,7 +16,7 @@ export const CompactUserHeader = () => {
       
       try {
         const { data } = await supabase
-          .from('profiles')
+          .from('perfis')
           .select('*')
           .eq('user_id', user.id)
           .single();
@@ -90,7 +90,7 @@ export const CompactUserHeader = () => {
             </div>
             <div>
               <h3 className="text-sm font-semibold text-instituto-dark">
-                {profile.full_name || 'Usuário'}
+                {profile.nome_completo || 'Usuário'}
               </h3>
               <p className="text-xs text-muted-foreground">
                 {profile.email}

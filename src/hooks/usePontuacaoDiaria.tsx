@@ -110,13 +110,13 @@ export const usePontuacaoDiaria = () => {
         return [];
       }
 
-      // Buscar dados dos profiles
+      // Buscar dados dos perfis
       const { data: profilesData, error: profilesError } = await supabase
-        .from('profiles')
+        .from('perfis')
         .select('id, full_name, email');
 
       if (profilesError) {
-        console.error('Erro ao buscar profiles:', profilesError);
+        console.error('Erro ao buscar perfis:', profilesError);
         return [];
       }
 

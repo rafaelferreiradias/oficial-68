@@ -43,7 +43,7 @@ export const CircunferenciaAbdominalModal: React.FC<CircunferenciaAbdominalModal
     try {
       // Buscar perfil do usuário
       const { data: profile } = await supabase
-        .from('profiles')
+        .from('perfis')
         .select('id')
         .eq('user_id', user.id)
         .single();
@@ -52,14 +52,14 @@ export const CircunferenciaAbdominalModal: React.FC<CircunferenciaAbdominalModal
 
       // Buscar dados de saúde existentes
       const { data: existingData } = await supabase
-        .from('dados_saude')
+        .from('dados_saude_usuario')
         .select('*')
         .eq('user_id', profile.id)
         .single();
 
       // Atualizar ou criar dados de saúde
       const { error } = await supabase
-        .from('dados_saude')
+        .from('dados_saude_usuario')
         .upsert({
           user_id: profile.id,
           circunferencia_abdominal_cm: circunferenciaNum,
@@ -73,7 +73,7 @@ export const CircunferenciaAbdominalModal: React.FC<CircunferenciaAbdominalModal
 
       // Calcular risco cardiometabólico automaticamente
       const { data: profileData } = await supabase
-        .from('profiles')
+        .from('perfis')
         .select('sexo')
         .eq('id', profile.id)
         .single();

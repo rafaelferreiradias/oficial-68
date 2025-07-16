@@ -22,7 +22,7 @@ export const EnhancedUserProfile = () => {
       
       try {
         const { data } = await supabase
-          .from('profiles')
+          .from('perfis')
           .select('*')
           .eq('user_id', user.id)
           .single();
@@ -41,7 +41,7 @@ export const EnhancedUserProfile = () => {
       const fetchUpdatedProfile = async () => {
         try {
           const { data } = await supabase
-            .from('profiles')
+            .from('perfis')
             .select('*')
             .eq('user_id', user.id)
             .single();
@@ -99,8 +99,8 @@ export const EnhancedUserProfile = () => {
 
       // Atualizar perfil com a nova URL
       const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ full_name: profile?.full_name || 'Avatar atualizado' })
+        .from('perfis')
+        .update({ nome_completo: profile?.nome_completo || 'Avatar atualizado' })
         .eq('user_id', user.id);
 
       if (updateError) throw updateError;
