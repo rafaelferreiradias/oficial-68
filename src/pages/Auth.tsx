@@ -42,11 +42,11 @@ const Auth = () => {
         try {
           const { data: profile } = await supabase
             .from('profiles')
-            .select('role')
+            .select('*')
             .eq('user_id', user.id)
             .single();
           
-          setShowAdminButton(profile?.role === 'admin');
+          setShowAdminButton(false); // Simplificado por enquanto
         } catch (error) {
           console.error('Erro ao verificar status admin:', error);
         }
@@ -123,27 +123,13 @@ const Auth = () => {
       try {
         const { data: { user: currentUser } } = await supabase.auth.getUser();
         if (currentUser) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('role')
-            .eq('user_id', currentUser.id)
-            .single();
-
           localStorage.setItem('userType', 'cliente');
           
-          if (profile?.role === 'admin') {
-            toast({
-              title: "✨ Bem-vindo Administrador!",
-              description: "Redirecionando para o painel administrativo..."
-            });
-            navigate('/admin');
-          } else {
-            toast({
-              title: "✨ Bem-vindo de volta!",
-              description: "Login realizado com sucesso. Redirecionando..."
-            });
-            navigate('/dashboard');
-          }
+          toast({
+            title: "✨ Bem-vindo de volta!",
+            description: "Login realizado com sucesso. Redirecionando..."
+          });
+          navigate('/dashboard');
         }
       } catch (error) {
         console.error('Erro ao verificar role:', error);

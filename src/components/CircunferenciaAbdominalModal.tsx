@@ -52,14 +52,14 @@ export const CircunferenciaAbdominalModal: React.FC<CircunferenciaAbdominalModal
 
       // Buscar dados de saúde existentes
       const { data: existingData } = await supabase
-        .from('dados_saude_usuario')
+        .from('dados_saude')
         .select('*')
         .eq('user_id', profile.id)
         .single();
 
       // Atualizar ou criar dados de saúde
       const { error } = await supabase
-        .from('dados_saude_usuario')
+        .from('dados_saude')
         .upsert({
           user_id: profile.id,
           circunferencia_abdominal_cm: circunferenciaNum,

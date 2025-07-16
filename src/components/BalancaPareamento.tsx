@@ -55,7 +55,7 @@ export const BalancaPareamento: React.FC = () => {
     
     try {
       const { data, error } = await supabase
-        .from('pesagens')
+        .from('dados_fisicos')
         .select('peso_kg, data_medicao')
         .eq('user_id', user.id)
         .order('data_medicao', { ascending: false })
@@ -282,9 +282,9 @@ export const BalancaPareamento: React.FC = () => {
     setIsSaving(true);
     
     try {
-      // Salvar na tabela pesagens
+      // Salvar na tabela dados_fisicos
       const { error: pesagemError } = await supabase
-        .from('pesagens')
+        .from('dados_fisicos')
         .insert({
           user_id: user.id,
           peso_kg: scaleData.weight,
@@ -303,14 +303,14 @@ export const BalancaPareamento: React.FC = () => {
 
       // Buscar dados existentes do usuário
       const { data: existingData } = await supabase
-        .from('dados_saude_usuario')
+        .from('dados_saude')
         .select('altura_cm, circunferencia_abdominal_cm, meta_peso_kg')
         .eq('user_id', user.id)
         .single();
 
-      // Atualizar dados_saude_usuario
+      // Atualizar dados_saude
       const { error: saudeError } = await supabase
-        .from('dados_saude_usuario')
+        .from('dados_saude')
         .upsert({
           user_id: user.id,
           peso_atual_kg: scaleData.weight,

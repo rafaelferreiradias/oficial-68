@@ -74,14 +74,14 @@ export const BeneficiosVisuais: React.FC = () => {
         // Buscar TODOS os dados em paralelo
         const [pesagensResult, fisicaResult, saudeResult] = await Promise.all([
           supabase
-            .from('pesagens')
+            .from('dados_fisicos')
             .select('*')
             .eq('user_id', profile.id)
             .order('data_medicao', { ascending: false })
             .limit(30),
           
           supabase
-            .from('dados_fisicos_usuario')
+            .from('dados_fisicos')
             .select('*')
             .eq('user_id', profile.id)
             .order('created_at', { ascending: false })
@@ -89,7 +89,7 @@ export const BeneficiosVisuais: React.FC = () => {
             .maybeSingle(),
             
           supabase
-            .from('dados_saude_usuario')
+            .from('dados_saude')
             .select('*')
             .eq('user_id', profile.id)
             .order('data_atualizacao', { ascending: false })
@@ -102,7 +102,7 @@ export const BeneficiosVisuais: React.FC = () => {
         
         if (pesagensResult.data && pesagensResult.data.length > 0) {
           const pesagemRecente = pesagensResult.data[0];
-          const altura = fisicaResult.data?.altura_cm || dadosSaudeAtualizado?.altura_cm || 170;
+          const altura = dadosSaudeAtualizado?.altura_cm || 170;
           const alturaMetros = altura / 100;
           const imcCalculado = pesagemRecente.peso_kg / (alturaMetros * alturaMetros);
           
