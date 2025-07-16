@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 
 interface BackupData {
   id: string;
@@ -11,11 +12,38 @@ interface BackupData {
   size_bytes: number;
 }
 
+interface FullBackupData {
+  timestamp: string;
+  user_id: string;
+  tables: {
+    profiles: any[];
+    dados_fisicos_usuario: any[];
+    dados_saude_usuario: any[];
+    historico_medidas: any[];
+    informacoes_fisicas: any[];
+    missao_dia: any[];
+    pesagens: any[];
+    pontuacao_diaria: any[];
+    perfil_comportamental: any[];
+    daily_missions: any[];
+    user_points: any[];
+    clientes: any[];
+    achievements: any[];
+    challenges: any[];
+    courses: any[];
+  };
+  storage: {
+    avatars: any[];
+  };
+}
+
 export const useDataBackup = () => {
   const [isBackingUp, setIsBackingUp] = useState(false);
   const [lastBackup, setLastBackup] = useState<string | null>(null);
   const [backupHistory, setBackupHistory] = useState<BackupData[]>([]);
+  const [backupProgress, setBackupProgress] = useState(0);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   useEffect(() => {
     loadBackupHistory();
@@ -202,13 +230,191 @@ export const useDataBackup = () => {
     });
   }, [backupHistory, toast]);
 
+  const exportToJson = (data: any, filename: string) => {
+    const jsonString = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const backupTable = async (tableName: string, userId?: string) => {
+    try {
+      let query = supabase.from(tableName as any).select('*');
+      
+      // Para tabelas que têm relação com user, filtrar por usuário
+      const userTables = [
+        'dados_fisicos_usuario', 'dados_saude_usuario', 'historico_medidas',
+        'informacoes_fisicas', 'missao_dia', 'pesagens', 'pontuacao_diaria',
+        'perfil_comportamental', 'daily_missions', 'user_points'
+      ];
+      
+      if (userTables.includes(tableName) && userId) {
+        // Buscar o profile id do usuário
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('user_id', userId)
+          .maybeSingle();
+        
+        if (profile) {
+          query = query.eq('user_id', profile.id);
+        }
+      } else if (tableName === 'profiles' && userId) {
+        query = query.eq('user_id', userId);
+      } else if (tableName === 'clientes' && userId) {
+        query = query.eq('user_id', userId);
+      }
+
+      const { data, error } = await query;
+      
+      if (error) {
+        console.error(`Erro ao fazer backup da tabela ${tableName}:`, error);
+        return [];
+      }
+      
+      return data || [];
+    } catch (error) {
+      console.error(`Erro ao fazer backup da tabela ${tableName}:`, error);
+      return [];
+    }
+  };
+
+  const backupStorage = async () => {
+    try {
+      const { data, error } = await supabase.storage
+        .from('avatars')
+        .list();
+      
+      if (error) {
+        console.error('Erro ao fazer backup do storage:', error);
+        return [];
+      }
+      
+      return data || [];
+    } catch (error) {
+      console.error('Erro ao fazer backup do storage:', error);
+      return [];
+    }
+  };
+
+  const createFullBackup = async () => {
+    if (!user) {
+      toast({
+        title: "Erro",
+        description: "Usuário não autenticado",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsBackingUp(true);
+    setBackupProgress(0);
+
+    try {
+      const totalSteps = 16; // 15 tabelas + 1 storage
+      let currentStep = 0;
+
+      const updateProgress = () => {
+        currentStep++;
+        setBackupProgress((currentStep / totalSteps) * 100);
+      };
+
+      toast({
+        title: "Backup iniciado",
+        description: "Fazendo backup completo dos dados..."
+      });
+
+      // Backup das tabelas
+      const tables = {
+        profiles: await backupTable('profiles', user.id),
+        dados_fisicos_usuario: await backupTable('dados_fisicos_usuario', user.id),
+        dados_saude_usuario: await backupTable('dados_saude_usuario', user.id),
+        historico_medidas: await backupTable('historico_medidas', user.id),
+        informacoes_fisicas: await backupTable('informacoes_fisicas', user.id),
+        missao_dia: await backupTable('missao_dia', user.id),
+        pesagens: await backupTable('pesagens', user.id),
+        pontuacao_diaria: await backupTable('pontuacao_diaria', user.id),
+        perfil_comportamental: await backupTable('perfil_comportamental', user.id),
+        daily_missions: await backupTable('daily_missions', user.id),
+        user_points: await backupTable('user_points', user.id),
+        clientes: await backupTable('clientes', user.id),
+        achievements: await backupTable('achievements'),
+        challenges: await backupTable('challenges'),
+        courses: await backupTable('courses'),
+      };
+
+      // Atualizar progresso para cada tabela
+      Object.keys(tables).forEach(() => updateProgress());
+
+      // Backup do storage
+      const storage = {
+        avatars: await backupStorage(),
+      };
+      updateProgress();
+
+      const backupData: FullBackupData = {
+        timestamp: new Date().toISOString(),
+        user_id: user.id,
+        tables,
+        storage,
+      };
+
+      // Exportar backup completo
+      const filename = `backup_completo_${new Date().toISOString().split('T')[0]}.json`;
+      exportToJson(backupData, filename);
+
+      // Exportar backups individuais por categoria
+      exportToJson(tables.profiles, `backup_perfil_${new Date().toISOString().split('T')[0]}.json`);
+      exportToJson({
+        dados_fisicos: tables.dados_fisicos_usuario,
+        dados_saude: tables.dados_saude_usuario,
+        historico_medidas: tables.historico_medidas,
+        informacoes_fisicas: tables.informacoes_fisicas,
+        pesagens: tables.pesagens,
+      }, `backup_dados_fisicos_${new Date().toISOString().split('T')[0]}.json`);
+      
+      exportToJson({
+        missoes: tables.missao_dia,
+        pontuacao: tables.pontuacao_diaria,
+        daily_missions: tables.daily_missions,
+        user_points: tables.user_points,
+      }, `backup_missoes_pontuacao_${new Date().toISOString().split('T')[0]}.json`);
+
+      exportToJson(tables.perfil_comportamental, `backup_perfil_comportamental_${new Date().toISOString().split('T')[0]}.json`);
+
+      toast({
+        title: "Backup completo realizado ✅",
+        description: "Todos os arquivos foram baixados com sucesso"
+      });
+      
+    } catch (error) {
+      console.error('Erro durante o backup:', error);
+      toast({
+        title: "Erro no backup",
+        description: "Erro durante o backup dos dados",
+        variant: "destructive"
+      });
+    } finally {
+      setIsBackingUp(false);
+      setBackupProgress(0);
+    }
+  };
+
   return {
     isBackingUp,
     lastBackup,
     backupHistory,
+    backupProgress,
     createBackup,
     restoreBackup,
     deleteBackup,
-    exportBackup
+    exportBackup,
+    createFullBackup
   };
 };
