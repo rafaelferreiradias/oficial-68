@@ -41,7 +41,7 @@ export const GraficoEvolucaoMissao = () => {
 
     setLoading(true);
     try {
-      const profile = await supabase.from('profiles').select('id').eq('user_id', user.id).single();
+      const profile = await supabase.from('perfis').select('id').eq('user_id', user.id).single();
       if (profile.error) throw profile.error;
 
       const dataInicio = format(subDays(new Date(), periodo), 'yyyy-MM-dd');

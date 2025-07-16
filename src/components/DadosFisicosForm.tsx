@@ -30,7 +30,7 @@ export const DadosFisicosForm = () => {
 
     try {
       const { data: profile } = await supabase
-        .from('profiles')
+        .from('perfis')
         .select('id')
         .eq('user_id', user.id)
         .single();
@@ -64,7 +64,7 @@ export const DadosFisicosForm = () => {
 
     try {
       const { data: profile, error: profileError } = await supabase
-        .from('profiles')
+        .from('perfis')
         .select('id')
         .eq('user_id', user.id)
         .single();

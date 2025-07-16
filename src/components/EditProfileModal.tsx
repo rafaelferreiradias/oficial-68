@@ -57,9 +57,9 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
     try {
       // Atualizar dados no perfil
       const { error: profileError } = await supabase
-        .from('profiles')
+        .from('perfis')
         .update({
-          full_name: formData.full_name,
+          nome_completo: formData.full_name,
           email: formData.email,
           celular: formData.celular,
           data_nascimento: formData.data_nascimento || null,
@@ -72,7 +72,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
 
       // Buscar o profile ID para atualizar dados físicos
       const { data: profile } = await supabase
-        .from('profiles')
+        .from('perfis')
         .select('id')
         .eq('user_id', user.id)
         .single();

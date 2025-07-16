@@ -21,19 +21,13 @@ interface MissaoDetalhada {
   data: string;
   pontos: number;
   categoria: string;
-  // Detalhes específicos da missão
-  liquido_ao_acordar?: string;
-  pratica_conexao?: string;
-  energia_ao_acordar?: number;
-  sono_horas?: number;
-  agua_litros?: string;
-  atividade_fisica?: boolean;
-  estresse_nivel?: number;
-  fome_emocional?: boolean;
-  gratidao?: string;
-  pequena_vitoria?: string;
-  intencao_para_amanha?: string;
-  nota_dia?: number;
+  // Campos reais da tabela missao_dia
+  missao_1_completa?: boolean;
+  missao_2_completa?: boolean;
+  missao_3_completa?: boolean;
+  missao_4_completa?: boolean;
+  missao_5_completa?: boolean;
+  pontuacao_total?: number;
 }
 
 export const MissaoCalendario = () => {
@@ -54,7 +48,7 @@ export const MissaoCalendario = () => {
 
     setLoading(true);
     try {
-      const profile = await supabase.from('profiles').select('id').eq('user_id', user.id).single();
+      const profile = await supabase.from('perfis').select('id').eq('user_id', user.id).single();
       if (profile.error) throw profile.error;
 
       const inicio = startOfMonth(date);
@@ -89,7 +83,7 @@ export const MissaoCalendario = () => {
     if (!user) return;
 
     try {
-      const profile = await supabase.from('profiles').select('id').eq('user_id', user.id).single();
+      const profile = await supabase.from('perfis').select('id').eq('user_id', user.id).single();
       if (profile.error) throw profile.error;
 
       const dataFormatada = format(date, 'yyyy-MM-dd');
@@ -115,18 +109,12 @@ export const MissaoCalendario = () => {
           data: dataFormatada,
           pontos: pontuacaoData?.total_pontos_dia || 0,
           categoria: pontuacaoData?.categoria_dia || 'baixa',
-          liquido_ao_acordar: missaoData?.liquido_ao_acordar,
-          pratica_conexao: missaoData?.pratica_conexao,
-          energia_ao_acordar: missaoData?.energia_ao_acordar,
-          sono_horas: missaoData?.sono_horas,
-          agua_litros: missaoData?.agua_litros,
-          atividade_fisica: missaoData?.atividade_fisica,
-          estresse_nivel: missaoData?.estresse_nivel,
-          fome_emocional: missaoData?.fome_emocional,
-          gratidao: missaoData?.gratidao,
-          pequena_vitoria: missaoData?.pequena_vitoria,
-          intencao_para_amanha: missaoData?.intencao_para_amanha,
-          nota_dia: missaoData?.nota_dia
+          missao_1_completa: missaoData?.missao_1_completa || false,
+          missao_2_completa: missaoData?.missao_2_completa || false,
+          missao_3_completa: missaoData?.missao_3_completa || false,
+          missao_4_completa: missaoData?.missao_4_completa || false,
+          missao_5_completa: missaoData?.missao_5_completa || false,
+          pontuacao_total: missaoData?.pontuacao_total || 0
         };
 
         setMissaoSelecionada(missaoDetalhada);
@@ -267,79 +255,53 @@ export const MissaoCalendario = () => {
 
               {/* Detalhes das respostas */}
               <div className="space-y-3">
-                <h4 className="font-medium">Detalhes da Missão:</h4>
+                <h4 className="font-medium">Status das Missões:</h4>
                 
-                {missaoSelecionada.liquido_ao_acordar && (
-                  <div className="text-sm">
-                    <span className="font-medium">Primeiro líquido:</span> {missaoSelecionada.liquido_ao_acordar}
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <div className={cn(
+                      "w-3 h-3 rounded-full",
+                      missaoSelecionada.missao_1_completa ? "bg-green-500" : "bg-gray-300"
+                    )} />
+                    <span>Missão 1</span>
                   </div>
-                )}
+                  
+                  <div className="flex items-center gap-2">
+                    <div className={cn(
+                      "w-3 h-3 rounded-full",
+                      missaoSelecionada.missao_2_completa ? "bg-green-500" : "bg-gray-300"
+                    )} />
+                    <span>Missão 2</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <div className={cn(
+                      "w-3 h-3 rounded-full",
+                      missaoSelecionada.missao_3_completa ? "bg-green-500" : "bg-gray-300"
+                    )} />
+                    <span>Missão 3</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <div className={cn(
+                      "w-3 h-3 rounded-full",
+                      missaoSelecionada.missao_4_completa ? "bg-green-500" : "bg-gray-300"
+                    )} />
+                    <span>Missão 4</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <div className={cn(
+                      "w-3 h-3 rounded-full",
+                      missaoSelecionada.missao_5_completa ? "bg-green-500" : "bg-gray-300"
+                    )} />
+                    <span>Missão 5</span>
+                  </div>
+                </div>
                 
-                {missaoSelecionada.pratica_conexao && (
-                  <div className="text-sm">
-                    <span className="font-medium">Prática de conexão:</span> {missaoSelecionada.pratica_conexao}
-                  </div>
-                )}
-                
-                {missaoSelecionada.energia_ao_acordar && (
-                  <div className="text-sm">
-                    <span className="font-medium">Energia ao acordar:</span> {missaoSelecionada.energia_ao_acordar}/5
-                  </div>
-                )}
-                
-                {missaoSelecionada.sono_horas && (
-                  <div className="text-sm">
-                    <span className="font-medium">Horas de sono:</span> {missaoSelecionada.sono_horas}h
-                  </div>
-                )}
-                
-                {missaoSelecionada.agua_litros && (
-                  <div className="text-sm">
-                    <span className="font-medium">Consumo de água:</span> {missaoSelecionada.agua_litros}
-                  </div>
-                )}
-                
-                {missaoSelecionada.atividade_fisica !== undefined && (
-                  <div className="text-sm">
-                    <span className="font-medium">Atividade física:</span> {missaoSelecionada.atividade_fisica ? 'Sim' : 'Não'}
-                  </div>
-                )}
-                
-                {missaoSelecionada.estresse_nivel && (
-                  <div className="text-sm">
-                    <span className="font-medium">Nível de estresse:</span> {missaoSelecionada.estresse_nivel}/5
-                  </div>
-                )}
-                
-                {missaoSelecionada.fome_emocional !== undefined && (
-                  <div className="text-sm">
-                    <span className="font-medium">Fome emocional:</span> {missaoSelecionada.fome_emocional ? 'Sim' : 'Não'}
-                  </div>
-                )}
-                
-                {missaoSelecionada.gratidao && (
-                  <div className="text-sm">
-                    <span className="font-medium">Gratidão:</span> {missaoSelecionada.gratidao}
-                  </div>
-                )}
-                
-                {missaoSelecionada.pequena_vitoria && (
-                  <div className="text-sm">
-                    <span className="font-medium">Pequena vitória:</span> {missaoSelecionada.pequena_vitoria}
-                  </div>
-                )}
-                
-                {missaoSelecionada.intencao_para_amanha && (
-                  <div className="text-sm">
-                    <span className="font-medium">Intenção para o próximo dia:</span> {missaoSelecionada.intencao_para_amanha}
-                  </div>
-                )}
-                
-                {missaoSelecionada.nota_dia && (
-                  <div className="text-sm">
-                    <span className="font-medium">Avaliação do dia:</span> {missaoSelecionada.nota_dia}/5
-                  </div>
-                )}
+                <div className="text-sm mt-4">
+                  <span className="font-medium">Pontuação total do dia:</span> {missaoSelecionada.pontuacao_total || 0} pontos
+                </div>
               </div>
             </div>
           ) : (

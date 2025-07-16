@@ -36,7 +36,7 @@ export const usePontuacaoDiaria = () => {
       
       // Buscar o profile_id do usuário autenticado
       const { data: profile } = await supabase
-        .from('profiles')
+        .from('perfis')
         .select('id')
         .eq('user_id', user.id)
         .single();
@@ -67,7 +67,7 @@ export const usePontuacaoDiaria = () => {
       
       // Buscar o profile_id do usuário autenticado
       const { data: profile } = await supabase
-        .from('profiles')
+        .from('perfis')
         .select('id')
         .eq('user_id', user.id)
         .single();
@@ -113,7 +113,7 @@ export const usePontuacaoDiaria = () => {
       // Buscar dados dos perfis
       const { data: profilesData, error: profilesError } = await supabase
         .from('perfis')
-        .select('id, full_name, email');
+        .select('id, nome_completo, email');
 
       if (profilesError) {
         console.error('Erro ao buscar perfis:', profilesError);
@@ -136,7 +136,7 @@ export const usePontuacaoDiaria = () => {
         if (!acc[userId]) {
           acc[userId] = {
             user_id: userId,
-            nome: profile.full_name || profile.email || 'Usuário',
+            nome: profile.nome_completo || profile.email || 'Usuário',
             pontos: [],
             total_pontos: 0,
             media_semanal: 0,
@@ -163,7 +163,7 @@ export const usePontuacaoDiaria = () => {
 
       // Buscar o profile_id do usuário autenticado
       const { data: profile } = await supabase
-        .from('profiles')
+        .from('perfis')
         .select('id')
         .eq('user_id', user.id)
         .single();
@@ -196,7 +196,7 @@ export const usePontuacaoDiaria = () => {
 
       // Buscar o profile_id do usuário autenticado
       const { data: profile } = await supabase
-        .from('profiles')
+        .from('perfis')
         .select('id')
         .eq('user_id', user.id)
         .single();
