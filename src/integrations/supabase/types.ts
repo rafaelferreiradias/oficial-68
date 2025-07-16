@@ -14,7 +14,222 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      avaliacoes_semanais: {
+        Row: {
+          created_at: string
+          dias_completos: number | null
+          id: string
+          observacoes: string | null
+          pontuacao_media: number | null
+          semana_inicio: string
+          total_pontos: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dias_completos?: number | null
+          id?: string
+          observacoes?: string | null
+          pontuacao_media?: number | null
+          semana_inicio: string
+          total_pontos?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dias_completos?: number | null
+          id?: string
+          observacoes?: string | null
+          pontuacao_media?: number | null
+          semana_inicio?: string
+          total_pontos?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      dados_fisicos: {
+        Row: {
+          agua_corporal_pct: number | null
+          circunferencia_abdominal_cm: number | null
+          created_at: string
+          data_medicao: string
+          gordura_corporal_pct: number | null
+          gordura_visceral: number | null
+          id: string
+          imc: number | null
+          massa_muscular_kg: number | null
+          origem_medicao: string | null
+          peso_kg: number
+          taxa_metabolica_basal: number | null
+          user_id: string
+        }
+        Insert: {
+          agua_corporal_pct?: number | null
+          circunferencia_abdominal_cm?: number | null
+          created_at?: string
+          data_medicao?: string
+          gordura_corporal_pct?: number | null
+          gordura_visceral?: number | null
+          id?: string
+          imc?: number | null
+          massa_muscular_kg?: number | null
+          origem_medicao?: string | null
+          peso_kg: number
+          taxa_metabolica_basal?: number | null
+          user_id: string
+        }
+        Update: {
+          agua_corporal_pct?: number | null
+          circunferencia_abdominal_cm?: number | null
+          created_at?: string
+          data_medicao?: string
+          gordura_corporal_pct?: number | null
+          gordura_visceral?: number | null
+          id?: string
+          imc?: number | null
+          massa_muscular_kg?: number | null
+          origem_medicao?: string | null
+          peso_kg?: number
+          taxa_metabolica_basal?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      dados_saude: {
+        Row: {
+          altura_cm: number | null
+          circunferencia_abdominal_cm: number | null
+          created_at: string
+          data_atualizacao: string
+          id: string
+          imc: number | null
+          meta_peso_kg: number | null
+          peso_atual_kg: number | null
+          user_id: string
+        }
+        Insert: {
+          altura_cm?: number | null
+          circunferencia_abdominal_cm?: number | null
+          created_at?: string
+          data_atualizacao?: string
+          id?: string
+          imc?: number | null
+          meta_peso_kg?: number | null
+          peso_atual_kg?: number | null
+          user_id: string
+        }
+        Update: {
+          altura_cm?: number | null
+          circunferencia_abdominal_cm?: number | null
+          created_at?: string
+          data_atualizacao?: string
+          id?: string
+          imc?: number | null
+          meta_peso_kg?: number | null
+          peso_atual_kg?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      missoes_diarias: {
+        Row: {
+          created_at: string
+          data_missao: string
+          id: string
+          missoes_completas: number | null
+          pontuacao_total: number | null
+          total_missoes: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data_missao: string
+          id?: string
+          missoes_completas?: number | null
+          pontuacao_total?: number | null
+          total_missoes?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data_missao?: string
+          id?: string
+          missoes_completas?: number | null
+          pontuacao_total?: number | null
+          total_missoes?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      pontuacoes: {
+        Row: {
+          categoria: string | null
+          created_at: string
+          data_pontuacao: string
+          descricao: string | null
+          id: string
+          pontos: number
+          user_id: string
+        }
+        Insert: {
+          categoria?: string | null
+          created_at?: string
+          data_pontuacao: string
+          descricao?: string | null
+          id?: string
+          pontos?: number
+          user_id: string
+        }
+        Update: {
+          categoria?: string | null
+          created_at?: string
+          data_pontuacao?: string
+          descricao?: string | null
+          id?: string
+          pontos?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          altura_cm: number | null
+          celular: string | null
+          created_at: string
+          data_nascimento: string | null
+          full_name: string | null
+          id: string
+          sexo: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          altura_cm?: number | null
+          celular?: string | null
+          created_at?: string
+          data_nascimento?: string | null
+          full_name?: string | null
+          id?: string
+          sexo?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          altura_cm?: number | null
+          celular?: string | null
+          created_at?: string
+          data_nascimento?: string | null
+          full_name?: string | null
+          id?: string
+          sexo?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
